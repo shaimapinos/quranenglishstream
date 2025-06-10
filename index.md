@@ -1,3 +1,4 @@
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -194,7 +195,9 @@
         <!-- Favorites View -->
         <div id="favoritesView" class="tab-content hidden">
             <p class="text-gray-500 text-center p-4 hidden" id="noFavoritesMessage">No favorite Surahs yet.</p>
-            <!-- Favorite songs will be injected here -->
+            <div id="favoriteSongsContainer">
+                <!-- Favorite songs will be injected here -->
+            </div>
         </div>
         <!-- Playlists View -->
         <div id="playlistsView" class="tab-content hidden">
@@ -231,7 +234,8 @@
                 <button data-minutes="15" class="bg-gray-700 hover:bg-[#84cc16] hover:text-gray-900 font-semibold py-3 px-4 rounded-lg">15 Minutes</button>
                 <button data-minutes="30" class="bg-gray-700 hover:bg-[#84cc16] hover:text-gray-900 font-semibold py-3 px-4 rounded-lg">30 Minutes</button>
                 <button data-minutes="60" class="bg-gray-700 hover:bg-[#84cc16] hover:text-gray-900 font-semibold py-3 px-4 rounded-lg">60 Minutes</button>
-                <button data-minutes="0" class="bg-gray-700 hover:bg-pink-500 font-semibold py-3 px-4 rounded-lg">Turn Off</button>
+                <button data-minutes="120" class="bg-gray-700 hover:bg-[#84cc16] hover:text-gray-900 font-semibold py-3 px-4 rounded-lg">120 Minutes</button>
+                <button data-minutes="0" class="col-span-2 bg-gray-700 hover:bg-pink-500 font-semibold py-3 px-4 rounded-lg">Turn Off</button>
             </div>
             <div class="flex justify-center mt-4">
                 <button id="cancelSleepTimerBtn" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-6 rounded-lg">Cancel</button>
@@ -346,6 +350,7 @@
 
         const libraryView = document.getElementById('libraryView');
         const favoritesView = document.getElementById('favoritesView');
+        const favoriteSongsContainer = document.getElementById('favoriteSongsContainer'); // <-- ADDED
         const playlistsView = document.getElementById('playlistsView');
         const singlePlaylistSongsView = document.getElementById('singlePlaylistSongsView');
         const songsInPlaylistContainer = document.getElementById('songsInPlaylistContainer');
@@ -864,7 +869,7 @@
         function renderFavorites() {
             const favSongsData = songs.filter(function(song) { return favoriteSongIds.includes(song.id); });
             noFavoritesMessage.classList.toggle('hidden', favSongsData.length > 0);
-            renderSongList(favoritesView, favSongsData);
+            renderSongList(favoriteSongsContainer, favSongsData); // <-- MODIFIED
 
             const activeTabButton = document.querySelector('.tab-button.tab-active');
             if (activeTabButton && activeTabButton.dataset.tab === 'favorites') {
