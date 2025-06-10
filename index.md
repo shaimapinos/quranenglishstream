@@ -1,4 +1,3 @@
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -194,7 +193,7 @@
         </div>
         <!-- Favorites View -->
         <div id="favoritesView" class="tab-content hidden">
-            <p class="text-gray-500 text-center p-4 hidden" id="noFavoritesMessage">No favorite songs yet.</p>
+            <p class="text-gray-500 text-center p-4 hidden" id="noFavoritesMessage">No favorite Surahs yet.</p>
             <!-- Favorite songs will be injected here -->
         </div>
         <!-- Playlists View -->
@@ -215,7 +214,7 @@
                 <button id="backToPlaylistsBtn" class="text-[#84cc16] hover:text-[#65a30d]">
                     <i class="fas fa-arrow-left mr-2"></i> Back to Playlists
                 </button>
-                <h3 id="currentPlaylistNameHeader" class="text-lg font-semibold">Playlist Songs</h3>
+                <h3 id="currentPlaylistNameHeader" class="text-lg font-semibold">Playlist Surahs</h3>
             </div>
             <div id="songsInPlaylistContainer">
                 <!-- Songs in the selected playlist will be injected here -->
@@ -268,6 +267,32 @@
         </div>
     </div>
     
+    <!-- NEW: Modal for Deleting Playlist -->
+    <div id="deletePlaylistModal" class="modal fixed inset-0 bg-black bg-opacity-75 items-center justify-center z-50 p-4">
+        <div class="relative bg-gray-800 rounded-2xl shadow-xl w-full max-w-md border border-gray-700">
+            <div class="p-8 text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-900/50 mb-4">
+                    <svg class="h-6 w-6 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-white">Delete Playlist</h3>
+                <p id="deleteModalText" class="mt-2 text-gray-400">
+                    <!-- Confirmation message will be set here by JS -->
+                </p>
+            </div>
+            <div class="flex justify-center items-center gap-4 bg-gray-800/50 p-4 rounded-b-2xl">
+                <button id="cancelDeletePlaylistBtn" class="flex-1 rounded-lg bg-gray-700 hover:bg-gray-600 px-4 py-3 text-white font-semibold transition-colors duration-200">
+                    Cancel
+                </button>
+                <button id="confirmDeletePlaylistBtn" class="flex-1 rounded-lg bg-red-600 hover:bg-red-700 px-4 py-3 text-white font-semibold transition-colors duration-200">
+                    Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+
     <!-- Toast Notification -->
     <div id="toastNotification" class="toast">This is a toast message!</div>
 
@@ -345,6 +370,12 @@
         const cancelAddToPlaylistBtn = document.getElementById('cancelAddToPlaylistBtn');
         const noPlaylistsForAddingMessage = document.getElementById('noPlaylistsForAddingMessage');
         
+        // NEW: Delete Playlist Modal Elements
+        const deletePlaylistModal = document.getElementById('deletePlaylistModal');
+        const deleteModalText = document.getElementById('deleteModalText');
+        const confirmDeletePlaylistBtn = document.getElementById('confirmDeletePlaylistBtn');
+        const cancelDeletePlaylistBtn = document.getElementById('cancelDeletePlaylistBtn');
+
         const toastNotification = document.getElementById('toastNotification');
         
         // Sleep Timer Elements
@@ -380,6 +411,7 @@
         let lastPlaybackState = null;
         let sleepTimerId = null;
         let activeTimerMinutes = 0;
+        let playlistIdToDelete = null; // NEW: To track which playlist to delete
 
         // --- Toast Notification ---
         function showToast(message, duration) {
@@ -440,13 +472,13 @@
             }
             
             if (activeTab === 'favorites') {
-                songTitleDisplay.textContent = "No Songs in Favorites";
+                songTitleDisplay.textContent = "No Surahs in Favorites";
             } else if (activeTab === 'playlists' && !currentOpenPlaylistId) {
-                songTitleDisplay.textContent = "No Songs in Playlist";
+                songTitleDisplay.textContent = "No Surahs in Playlist";
             } else if (activeTab === 'playlists' && currentOpenPlaylistId) {
                 songTitleDisplay.textContent = "This Playlist is Empty";
             } else {
-                songTitleDisplay.textContent = "No Song Selected";
+                songTitleDisplay.textContent = "No Surah Selected";
             }
             songArtistDisplay.textContent = "---";
         }
@@ -486,7 +518,7 @@
                         audioPlayer.currentTime = options.seekTime;
                     }
                     if (isPlaying) {
-                        audioPlayer.play().catch(function(e) { console.error("Error playing loaded song:", e); });
+                        audioPlayer.play().catch(function(e) { console.error("Error playing loaded Surah:", e); });
                     }
                     audioPlayer.oncanplaythrough = null;
                 };
@@ -1004,19 +1036,26 @@
                     const div = document.createElement('div');
                     div.className = 'p-3 bg-gray-800 rounded-lg mb-2 flex justify-between items-center cursor-pointer hover:bg-gray-700 transition-colors duration-150';
                     div.innerHTML = `
-                        <span class="font-semibold truncate flex-grow">${playlist.name} (${(playlist.songIds && playlist.songIds.length) || 0} songs)</span>
+                        <div class="font-semibold truncate flex-grow" data-action="open-playlist">
+                           ${playlist.name} (${(playlist.songIds && playlist.songIds.length) || 0} songs)
+                        </div>
                         <div class="flex-shrink-0">
-                            <button data-playlist-id="${playlist.id}" data-action="delete-playlist" class="text-red-500 hover:text-red-400 p-2 rounded-full focus:outline-none"><i class="fas fa-trash-alt"></i></button>
+                            <button data-playlist-id="${playlist.id}" data-playlist-name="${playlist.name}" data-action="delete-playlist" class="text-red-500 hover:text-red-400 p-2 rounded-full focus:outline-none"><i class="fas fa-trash-alt"></i></button>
                         </div>
                     `;
+
                     div.addEventListener('click', function(e) {
-                        const buttonTarget = e.target.closest('button[data-action="delete-playlist"]');
-                        if (buttonTarget) {
-                            const playlistId = buttonTarget.dataset.playlistId;
-                            if (confirm(`Are you sure you want to delete the playlist "${playlist.name}"? This cannot be undone.`)) {
-                                deletePlaylist(playlistId);
-                            }
-                        } else {
+                        const target = e.target.closest('[data-action]');
+                        if (!target) return;
+                        
+                        const action = target.dataset.action;
+                        
+                        if (action === 'delete-playlist') {
+                            const playlistId = target.dataset.playlistId;
+                            const playlistName = target.dataset.playlistName;
+                            // UPDATED: Open custom modal instead of confirm()
+                            openDeleteConfirmationModal(playlistId, playlistName);
+                        } else if (action === 'open-playlist') {
                             showSongsForPlaylist(playlist.id);
                         }
                     });
@@ -1028,6 +1067,18 @@
             if (activeTabButton && activeTabButton.dataset.tab === 'playlists' && !currentOpenPlaylistId) {
                  updatePlayerHeader();
             }
+        }
+        
+        // NEW: Functions to handle the delete confirmation modal
+        function openDeleteConfirmationModal(playlistId, playlistName) {
+            playlistIdToDelete = playlistId;
+            deleteModalText.textContent = `Are you sure you want to delete the playlist "${playlistName}"? This cannot be undone.`;
+            deletePlaylistModal.classList.add('active');
+        }
+
+        function closeDeleteConfirmationModal() {
+            deletePlaylistModal.classList.remove('active');
+            playlistIdToDelete = null;
         }
 
         async function deletePlaylist(playlistId) {
@@ -1085,7 +1136,7 @@
                 showToast(`Added to playlist "${playlist ? playlist.name : 'playlist'}".`);
             } catch (error) {
                 console.error("Error adding song to playlist:", error);
-                showToast("Error adding song to playlist.", 3000);
+                showToast("Error adding Surah to playlist.", 3000);
             }
         }
 
@@ -1100,7 +1151,7 @@
                 showToast(`Removed from playlist "${playlist ? playlist.name : 'playlist'}".`);
             } catch (error) {
                 console.error("Error removing song from playlist:", error);
-                showToast("Error removing song.", 3000);
+                showToast("Error removing Surah from playlist.", 3000);
             }
         }
 
@@ -1153,9 +1204,18 @@
         // --- Initial Setup ---
         document.addEventListener('DOMContentLoaded', function() {
             initAuth(); 
+            
+            // NEW: Event listeners for the delete confirmation modal
+            confirmDeletePlaylistBtn.addEventListener('click', () => {
+                if (playlistIdToDelete) {
+                    deletePlaylist(playlistIdToDelete);
+                }
+                closeDeleteConfirmationModal();
+            });
+
+            cancelDeletePlaylistBtn.addEventListener('click', closeDeleteConfirmationModal);
         });
 
     </script>
 </body>
 </html>
-
