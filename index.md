@@ -1,3 +1,6 @@
+/*all modifications:  favorites message, githu url removed, sleep timer update and complete surahs list */
+
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -180,7 +183,7 @@
 
     <!-- Tabs for Song Lists -->
     <div class="flex border-b border-gray-700 sticky top-0 bg-gray-900 z-10">
-        <button data-tab="library" class="tab-button flex-1 py-3 text-center text-gray-400 hover:text-white tab-active">Audio Library</button>
+        <button data-tab="library" class="tab-button flex-1 py-3 text-center text-gray-400 hover:text-white tab-active">Surahs</button>
         <button data-tab="favorites" class="tab-button flex-1 py-3 text-center text-gray-400 hover:text-white">Favorites</button>
         <button data-tab="playlists" class="tab-button flex-1 py-3 text-center text-gray-400 hover:text-white">Playlists</button>
     </div>
