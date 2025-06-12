@@ -1,5 +1,3 @@
-/*all modifications:  favorites message, githu url removed, sleep timer update and complete surahs list */
-
 
 <html lang="en">
 <head>
