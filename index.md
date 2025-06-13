@@ -1,4 +1,6 @@
 
+
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -155,7 +157,7 @@
                        <span></span><span></span><span></span><span></span>
                     </div>
                     <div>
-                        <p id="songTitle" class="text-lg font-semibold truncate">No Song Selected</p>
+                        <p id="songTitle" class="text-lg font-semibold truncate">No Surah Selected</p>
                         <p id="songArtist" class="text-sm text-gray-400 truncate">---</p>
                     </div>
                 </div>
@@ -584,9 +586,9 @@
             } else if (activeTab === 'playlists' && !currentOpenPlaylistId) {
                 songTitleDisplay.textContent = "Your Playlists";
             } else if (activeTab === 'playlists' && currentOpenPlaylistId) {
-                songTitleDisplay.textContent = "This Playlist is Empty";
+                songTitleDisplay.textContent = "Your Playlists";
             } else {
-                songTitleDisplay.textContent = "Select a Surah to Play it";
+                songTitleDisplay.textContent = "Select a Surah to Play";
             }
             songArtistDisplay.textContent = "---";
         }
