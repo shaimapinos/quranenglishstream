@@ -6,10 +6,14 @@
     <title>Audio Stream Player</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
             overscroll-behavior-y: contain; /* Prevents pull-to-refresh in WebView */
+            /* MODIFICATION: Added height and overflow-hidden to prevent body scroll */
+            height: 100vh;
+            overflow: hidden;
         }
         /* Custom scrollbar for webkit browsers */
         .custom-scrollbar::-webkit-scrollbar {
@@ -126,106 +130,125 @@
         }
     </style>
 </head>
+<!-- MODIFICATION: body is now the main flex container for the two key sections -->
 <body class="bg-gray-900 text-white flex flex-col h-screen">
 
     <!-- Audio Element -->
     <audio id="audioPlayer"></audio>
 
-    <!-- Top Bar: Current Song Info -->
-    <div class="p-4 bg-gray-800 shadow-md relative">
-        <div id="currentSongDisplay" class="text-center flex items-center justify-center">
-             <div id="header-now-playing" class="now-playing-indicator hidden mr-2">
-               <span></span><span></span><span></span><span></span>
+    <!-- 
+      MODIFICATION: Player Section Wrapper.
+      This div group all player controls and info.
+      'flex-shrink-0' prevents this section from shrinking.
+    -->
+    <div id="player-section" class="flex-shrink-0">
+        <!-- Top Bar: Current Song Info -->
+        <div class="p-4 bg-gray-800 shadow-md relative">
+            <div id="currentSongDisplay" class="text-center flex items-center justify-center">
+                 <div id="header-now-playing" class="now-playing-indicator hidden mr-2">
+                   <span></span><span></span><span></span><span></span>
+                </div>
+                <div>
+                    <p id="songTitle" class="text-lg font-semibold truncate">No Song Selected</p>
+                    <p id="songArtist" class="text-sm text-gray-400 truncate">---</p>
+                </div>
             </div>
-            <div>
-                <p id="songTitle" class="text-lg font-semibold truncate">No Song Selected</p>
-                <p id="songArtist" class="text-sm text-gray-400 truncate">---</p>
+        </div>
+
+        <!-- Progress Bar and Time -->
+        <div class="p-4 bg-gray-800">
+            <input type="range" id="progressBar" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-[#84cc16]">
+            <div class="flex justify-between text-xs text-gray-400 mt-1">
+                <span id="currentTime">0:00</span>
+                <span id="duration">0:00</span>
+            </div>
+        </div>
+
+        <!-- Player Controls -->
+        <div class="p-4 bg-gray-800 flex items-center justify-around">
+            <button id="shuffleBtn" class="player-button text-gray-400 hover:text-[#84cc16]"><i class="fas fa-random fa-lg"></i></button>
+            <button id="prevBtn" class="player-button text-gray-300 hover:text-white"><i class="fas fa-step-backward fa-xl"></i></button>
+            <button id="playPauseBtn" class="player-button text-[#84cc16] hover:text-[#65a30d] bg-gray-700 rounded-full w-16 h-16 flex items-center justify-center">
+                <i class="fas fa-play fa-2x"></i>
+            </button>
+            <button id="nextBtn" class="player-button text-gray-300 hover:text-white"><i class="fas fa-step-forward fa-xl"></i></button>
+            <button id="loopBtn" class="player-button text-gray-400 hover:text-[#84cc16]"><i class="fas fa-retweet fa-lg"></i></button>
+        </div>
+
+        <!-- Volume and Sleep Timer -->
+        <div class="px-4 md:px-6 pt-2 pb-4 bg-gray-800 flex items-center justify-center relative">
+            <!-- Centered Volume Controls -->
+            <div class="flex items-center justify-center space-x-2 w-full">
+                <i class="fas fa-volume-down text-gray-400"></i>
+                <input type="range" id="volumeCtrl" min="0" max="1" step="0.01" value="0.5" class="w-1/2 md:w-1/3 h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-[#84cc16]">
+                <i class="fas fa-volume-up text-gray-400"></i>
+            </div>
+            <!-- Sleep Timer Button absolutely positioned on the right -->
+            <div class="absolute right-4 md:right-6">
+                 <button id="sleepTimerBtn" class="player-button text-gray-400 hover:text-[#84cc16]"><i class="fas fa-clock fa-lg"></i></button>
             </div>
         </div>
     </div>
 
-    <!-- Progress Bar and Time -->
-    <div class="p-4 bg-gray-800">
-        <input type="range" id="progressBar" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-[#84cc16]">
-        <div class="flex justify-between text-xs text-gray-400 mt-1">
-            <span id="currentTime">0:00</span>
-            <span id="duration">0:00</span>
+
+    <!-- 
+      MODIFICATION: Library Section Wrapper.
+      - 'flex-grow' makes this section take all available vertical space.
+      - 'overflow-y-auto' makes ONLY this section scrollable if its content is too tall.
+    -->
+    <div id="library-section" class="flex flex-col flex-grow overflow-y-auto custom-scrollbar">
+        <!-- Tabs for Song Lists (Sticky within this scrollable container) -->
+        <div class="flex border-b border-gray-700 sticky top-0 bg-gray-900 z-10 flex-shrink-0">
+            <button data-tab="library" class="tab-button flex-1 py-3 text-center text-gray-400 hover:text-white tab-active">Surahs</button>
+            <button data-tab="favorites" class="tab-button flex-1 py-3 text-center text-gray-400 hover:text-white">Favorites</button>
+            <button data-tab="playlists" class="tab-button flex-1 py-3 text-center text-gray-400 hover:text-white">Playlists</button>
         </div>
-    </div>
 
-    <!-- Player Controls -->
-    <div class="p-4 bg-gray-800 flex items-center justify-around">
-        <button id="shuffleBtn" class="player-button text-gray-400 hover:text-[#84cc16]"><i class="fas fa-random fa-lg"></i></button>
-        <button id="prevBtn" class="player-button text-gray-300 hover:text-white"><i class="fas fa-step-backward fa-xl"></i></button>
-        <button id="playPauseBtn" class="player-button text-[#84cc16] hover:text-[#65a30d] bg-gray-700 rounded-full w-16 h-16 flex items-center justify-center">
-            <i class="fas fa-play fa-2x"></i>
-        </button>
-        <button id="nextBtn" class="player-button text-gray-300 hover:text-white"><i class="fas fa-step-forward fa-xl"></i></button>
-        <button id="loopBtn" class="player-button text-gray-400 hover:text-[#84cc16]"><i class="fas fa-retweet fa-lg"></i></button>
-    </div>
-
-    <!-- Volume and Sleep Timer -->
-    <div class="px-4 md:px-6 pt-2 pb-4 bg-gray-800 flex items-center justify-center relative">
-        <!-- Centered Volume Controls -->
-        <div class="flex items-center justify-center space-x-2 w-full">
-            <i class="fas fa-volume-down text-gray-400"></i>
-            <input type="range" id="volumeCtrl" min="0" max="1" step="0.01" value="0.5" class="w-1/2 md:w-1/3 h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-[#84cc16]">
-            <i class="fas fa-volume-up text-gray-400"></i>
-        </div>
-        <!-- Sleep Timer Button absolutely positioned on the right -->
-        <div class="absolute right-4 md:right-6">
-             <button id="sleepTimerBtn" class="player-button text-gray-400 hover:text-[#84cc16]"><i class="fas fa-clock fa-lg"></i></button>
-        </div>
-    </div>
-
-
-    <!-- Tabs for Song Lists -->
-    <div class="flex border-b border-gray-700 sticky top-0 bg-gray-900 z-10">
-        <button data-tab="library" class="tab-button flex-1 py-3 text-center text-gray-400 hover:text-white tab-active">Surahs</button>
-        <button data-tab="favorites" class="tab-button flex-1 py-3 text-center text-gray-400 hover:text-white">Favorites</button>
-        <button data-tab="playlists" class="tab-button flex-1 py-3 text-center text-gray-400 hover:text-white">Playlists</button>
-    </div>
-
-    <!-- Song List Area -->
-    <div id="songListContainer" class="flex-grow overflow-y-auto custom-scrollbar p-2">
-        <!-- Library View -->
-        <div id="libraryView" class="tab-content">
-            <!-- Songs will be injected here -->
-        </div>
-        <!-- Favorites View -->
-        <div id="favoritesView" class="tab-content hidden">
-            <p class="text-gray-500 text-center p-4 hidden" id="noFavoritesMessage">No favorite Surahs yet.</p>
-            <div id="favoriteSongsContainer">
-                <!-- Favorite songs will be injected here -->
+        <!-- 
+          Song List Area
+          MODIFICATION: Removed 'flex-grow' and 'overflow-y-auto' as the parent now handles this.
+        -->
+        <div id="songListContainer" class="p-2">
+            <!-- Library View -->
+            <div id="libraryView" class="tab-content">
+                <!-- Songs will be injected here -->
+            </div>
+            <!-- Favorites View -->
+            <div id="favoritesView" class="tab-content hidden">
+                <p class="text-gray-500 text-center p-4 hidden" id="noFavoritesMessage">No favorite Surahs yet.</p>
+                <div id="favoriteSongsContainer">
+                    <!-- Favorite songs will be injected here -->
+                </div>
+            </div>
+            <!-- Playlists View -->
+            <div id="playlistsView" class="tab-content hidden">
+                <div class="p-2">
+                    <button id="createPlaylistBtn" class="w-full bg-[#84cc16] hover:bg-[#65a30d] text-white font-semibold py-2 px-4 rounded-lg mb-2">
+                        <i class="fas fa-plus-circle mr-2"></i>Create New Playlist
+                    </button>
+                     <div id="myPlaylistsContainer">
+                        <!-- Playlists will be listed here -->
+                     </div>
+                     <p class="text-gray-500 text-center p-4 hidden" id="noPlaylistsMessage">There are no playlists. Create one first!</p>
+                </div>
+            </div>
+            <!-- Single Playlist Songs View -->
+            <div id="singlePlaylistSongsView" class="tab-content hidden">
+                 <div class="flex items-center justify-between p-2 border-b border-gray-700">
+                    <button id="backToPlaylistsBtn" class="text-[#84cc16] hover:text-[#65a30d]">
+                        <i class="fas fa-arrow-left mr-2"></i> Back to Playlists
+                    </button>
+                    <h3 id="currentPlaylistNameHeader" class="text-lg font-semibold">Playlist Surahs</h3>
+                </div>
+                <div id="songsInPlaylistContainer">
+                    <!-- Songs in the selected playlist will be injected here -->
+                </div>
+                 <p class="text-gray-500 text-center p-4 hidden" id="noSongsInPlaylistMessage">This playlist is empty.</p>
             </div>
         </div>
-        <!-- Playlists View -->
-        <div id="playlistsView" class="tab-content hidden">
-            <div class="p-2">
-                <button id="createPlaylistBtn" class="w-full bg-[#84cc16] hover:bg-[#65a30d] text-white font-semibold py-2 px-4 rounded-lg mb-2">
-                    <i class="fas fa-plus-circle mr-2"></i>Create New Playlist
-                </button>
-                 <div id="myPlaylistsContainer">
-                    <!-- Playlists will be listed here -->
-                 </div>
-                 <p class="text-gray-500 text-center p-4 hidden" id="noPlaylistsMessage">There are no playlists. Create one first!</p>
-            </div>
-        </div>
-        <!-- Single Playlist Songs View -->
-        <div id="singlePlaylistSongsView" class="tab-content hidden">
-             <div class="flex items-center justify-between p-2 border-b border-gray-700">
-                <button id="backToPlaylistsBtn" class="text-[#84cc16] hover:text-[#65a30d]">
-                    <i class="fas fa-arrow-left mr-2"></i> Back to Playlists
-                </button>
-                <h3 id="currentPlaylistNameHeader" class="text-lg font-semibold">Playlist Surahs</h3>
-            </div>
-            <div id="songsInPlaylistContainer">
-                <!-- Songs in the selected playlist will be injected here -->
-            </div>
-             <p class="text-gray-500 text-center p-4 hidden" id="noSongsInPlaylistMessage">This playlist is empty.</p>
-        </div>
     </div>
 
+    <!-- All modals remain at the end of the body, outside the main layout flow -->
     <!-- Sleep Timer Modal -->
     <div id="sleepTimerModal" class="modal fixed inset-0 bg-black bg-opacity-75 items-center justify-center z-50 p-4">
         <div class="bg-gray-800 p-6 rounded-lg shadow-xl w-full max-w-sm">
@@ -242,7 +265,6 @@
             </div>
         </div>
     </div>
-
 
     <!-- Modal for Creating Playlist -->
     <div id="createPlaylistModal" class="modal fixed inset-0 bg-black bg-opacity-75 items-center justify-center z-50 p-4">
@@ -271,7 +293,7 @@
         </div>
     </div>
     
-    <!-- NEW: Modal for Deleting Playlist -->
+    <!-- Modal for Deleting Playlist -->
     <div id="deletePlaylistModal" class="modal fixed inset-0 bg-black bg-opacity-75 items-center justify-center z-50 p-4">
         <div class="relative bg-gray-800 rounded-2xl shadow-xl w-full max-w-md border border-gray-700">
             <div class="p-8 text-center">
@@ -296,10 +318,8 @@
         </div>
     </div>
 
-
     <!-- Toast Notification -->
     <div id="toastNotification" class="toast">This is a toast message!</div>
-
 
     <script type="module">
         // Firebase Imports
@@ -309,7 +329,6 @@
 
         // --- Firebase Configuration ---
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-
             apiKey: "AIzaSyCKQhaLiswg-bGGKgnO5ScH2-xLzspToHA",
             authDomain: "quranenglishstream.firebaseapp.com",
             projectId: "quranenglishstream",
@@ -317,7 +336,6 @@
             messagingSenderId: "300392129839",
             appId: "1:300392129839:web:30b05802abeb2748f8edda",
             measurementId: "G-JX6YBY2DVM"
-
         };
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'audio-player-default-app';
 
@@ -331,7 +349,6 @@
         let dbPlaylistsCollectionRef = null;
         let unsubscribeUserDoc = null;
         let unsubscribePlaylists = null;
-
 
         // --- Audio Player State & Elements ---
         const audioPlayer = document.getElementById('audioPlayer');
@@ -350,7 +367,7 @@
 
         const libraryView = document.getElementById('libraryView');
         const favoritesView = document.getElementById('favoritesView');
-        const favoriteSongsContainer = document.getElementById('favoriteSongsContainer'); // <-- ADDED
+        const favoriteSongsContainer = document.getElementById('favoriteSongsContainer');
         const playlistsView = document.getElementById('playlistsView');
         const singlePlaylistSongsView = document.getElementById('singlePlaylistSongsView');
         const songsInPlaylistContainer = document.getElementById('songsInPlaylistContainer');
@@ -375,7 +392,6 @@
         const cancelAddToPlaylistBtn = document.getElementById('cancelAddToPlaylistBtn');
         const noPlaylistsForAddingMessage = document.getElementById('noPlaylistsForAddingMessage');
         
-        // NEW: Delete Playlist Modal Elements
         const deletePlaylistModal = document.getElementById('deletePlaylistModal');
         const deleteModalText = document.getElementById('deleteModalText');
         const confirmDeletePlaylistBtn = document.getElementById('confirmDeletePlaylistBtn');
@@ -383,13 +399,11 @@
 
         const toastNotification = document.getElementById('toastNotification');
         
-        // Sleep Timer Elements
         const sleepTimerBtn = document.getElementById('sleepTimerBtn');
         const sleepTimerModal = document.getElementById('sleepTimerModal');
         const sleepTimerTitle = document.getElementById('sleepTimerTitle');
         const timerOptions = document.getElementById('timerOptions');
         const cancelSleepTimerBtn = document.getElementById('cancelSleepTimerBtn');
-
 
         let songs = [
             { id: 's1', title: 'Surah 1: Al-Fatiha (The Opening)', artist: 'Mishary Al-Afasy and Ibrahim Walk', url: 'https://archive.org/download/AlQuranWithEnglishSaheehIntlTranslation--RecitationByMishariIbnRashidAl-AfasyWithIbrahimWalk/001.mp3'},
@@ -520,9 +534,11 @@
         let lastPlaybackState = null;
         let sleepTimerId = null;
         let activeTimerMinutes = 0;
-        let playlistIdToDelete = null; // NEW: To track which playlist to delete
+        let playlistIdToDelete = null; 
 
-        // --- Toast Notification ---
+        // --- All JavaScript functions remain unchanged ---
+        // ... (The entire script content from the uploaded file) ...
+         // --- Toast Notification ---
         function showToast(message, duration) {
             duration = duration || 3000;
             toastNotification.textContent = message;
@@ -768,6 +784,7 @@
         });
 
         function formatTime(seconds) {
+            if (isNaN(seconds)) return '0:00';
             const minutes = Math.floor(seconds / 60);
             const secs = Math.floor(seconds % 60);
             return minutes + ':' + (secs < 10 ? '0' : '') + secs;
@@ -1162,7 +1179,6 @@
                         if (action === 'delete-playlist') {
                             const playlistId = target.dataset.playlistId;
                             const playlistName = target.dataset.playlistName;
-                            // UPDATED: Open custom modal instead of confirm()
                             openDeleteConfirmationModal(playlistId, playlistName);
                         } else if (action === 'open-playlist') {
                             showSongsForPlaylist(playlist.id);
@@ -1178,7 +1194,6 @@
             }
         }
         
-        // NEW: Functions to handle the delete confirmation modal
         function openDeleteConfirmationModal(playlistId, playlistName) {
             playlistIdToDelete = playlistId;
             deleteModalText.textContent = `Are you sure you want to delete the playlist "${playlistName}"? This cannot be undone.`;
@@ -1314,7 +1329,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             initAuth(); 
             
-            // NEW: Event listeners for the delete confirmation modal
             confirmDeletePlaylistBtn.addEventListener('click', () => {
                 if (playlistIdToDelete) {
                     deletePlaylist(playlistIdToDelete);
