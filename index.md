@@ -1,3 +1,6 @@
+
+
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -218,7 +221,7 @@
                 </div>
                 <!-- Favorites View -->
                 <div id="favoritesView" class="tab-content hidden">
-                    <p class="text-gray-500 text-center p-4 hidden" id="noFavoritesMessage">No favorite Surahs yet.</p>
+                    <p class="text-gray-500 text-center p-4 hidden" id="noFavoritesMessage">No Surahs added to Your Favorites yet.</p>
                     <div id="favoriteSongsContainer">
                         <!-- Favorite songs will be injected here -->
                     </div>
@@ -274,7 +277,7 @@
     <div id="createPlaylistModal" class="modal fixed inset-0 bg-black bg-opacity-75 items-center justify-center z-50 p-4">
         <div class="bg-gray-800 p-6 rounded-lg shadow-xl w-full max-w-md">
             <h3 class="text-xl font-semibold mb-4">Create New Playlist</h3>
-            <input type="text" id="newPlaylistName" placeholder="Playlist Name" class="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:border-[#84cc16] outline-none mb-4">
+            <input type="text" id="newPlaylistName" placeholder="Playlist Name" class="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:border-[#84cc16] outline-none mb-4 text-white">
             <div class="flex justify-end space-x-2">
                 <button id="cancelCreatePlaylistBtn" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg">Cancel</button>
                 <button id="savePlaylistBtn" class="bg-[#84cc16] hover:bg-[#65a30d] text-white font-semibold py-2 px-4 rounded-lg">Create</button>
@@ -579,13 +582,13 @@
             }
             
             if (activeTab === 'favorites') {
-                songTitleDisplay.textContent = "No Surahs in Favorites";
+                songTitleDisplay.textContent = "Your Favorites";
             } else if (activeTab === 'playlists' && !currentOpenPlaylistId) {
-                songTitleDisplay.textContent = "No Surahs in Playlist";
+                songTitleDisplay.textContent = "Your Playlists";
             } else if (activeTab === 'playlists' && currentOpenPlaylistId) {
                 songTitleDisplay.textContent = "This Playlist is Empty";
             } else {
-                songTitleDisplay.textContent = "No Surah Selected";
+                songTitleDisplay.textContent = "Select a Surah to Play it";
             }
             songArtistDisplay.textContent = "---";
         }
