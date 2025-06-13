@@ -1,4 +1,3 @@
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -11,9 +10,10 @@
         body {
             font-family: 'Inter', sans-serif;
             overscroll-behavior-y: contain; /* Prevents pull-to-refresh in WebView */
-            /* MODIFICATION: Added height and overflow-hidden to prevent body scroll */
-            height: 100vh;
-            overflow: hidden;
+            margin: 0;
+            background-color: #111827; /* bg-gray-900 */
+            /* MODIFICATION: Added overflow:hidden to prevent the body's scrollbar from appearing */
+            overflow: hidden; 
         }
         /* Custom scrollbar for webkit browsers */
         .custom-scrollbar::-webkit-scrollbar {
@@ -130,120 +130,124 @@
         }
     </style>
 </head>
-<!-- MODIFICATION: body is now the main flex container for the two key sections -->
-<body class="bg-gray-900 text-white flex flex-col h-screen">
+<body>
 
     <!-- Audio Element -->
     <audio id="audioPlayer"></audio>
 
     <!-- 
-      MODIFICATION: Player Section Wrapper.
-      This div group all player controls and info.
-      'flex-shrink-0' prevents this section from shrinking.
+      MODIFICATION: Main Application Wrapper.
+      This div now controls the overall layout (flex, height, background) 
+      instead of the <body> tag, making the component self-contained and robust.
     -->
-    <div id="player-section" class="flex-shrink-0">
-        <!-- Top Bar: Current Song Info -->
-        <div class="p-4 bg-gray-800 shadow-md relative">
-            <div id="currentSongDisplay" class="text-center flex items-center justify-center">
-                 <div id="header-now-playing" class="now-playing-indicator hidden mr-2">
-                   <span></span><span></span><span></span><span></span>
-                </div>
-                <div>
-                    <p id="songTitle" class="text-lg font-semibold truncate">No Song Selected</p>
-                    <p id="songArtist" class="text-sm text-gray-400 truncate">---</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Progress Bar and Time -->
-        <div class="p-4 bg-gray-800">
-            <input type="range" id="progressBar" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-[#84cc16]">
-            <div class="flex justify-between text-xs text-gray-400 mt-1">
-                <span id="currentTime">0:00</span>
-                <span id="duration">0:00</span>
-            </div>
-        </div>
-
-        <!-- Player Controls -->
-        <div class="p-4 bg-gray-800 flex items-center justify-around">
-            <button id="shuffleBtn" class="player-button text-gray-400 hover:text-[#84cc16]"><i class="fas fa-random fa-lg"></i></button>
-            <button id="prevBtn" class="player-button text-gray-300 hover:text-white"><i class="fas fa-step-backward fa-xl"></i></button>
-            <button id="playPauseBtn" class="player-button text-[#84cc16] hover:text-[#65a30d] bg-gray-700 rounded-full w-16 h-16 flex items-center justify-center">
-                <i class="fas fa-play fa-2x"></i>
-            </button>
-            <button id="nextBtn" class="player-button text-gray-300 hover:text-white"><i class="fas fa-step-forward fa-xl"></i></button>
-            <button id="loopBtn" class="player-button text-gray-400 hover:text-[#84cc16]"><i class="fas fa-retweet fa-lg"></i></button>
-        </div>
-
-        <!-- Volume and Sleep Timer -->
-        <div class="px-4 md:px-6 pt-2 pb-4 bg-gray-800 flex items-center justify-center relative">
-            <!-- Centered Volume Controls -->
-            <div class="flex items-center justify-center space-x-2 w-full">
-                <i class="fas fa-volume-down text-gray-400"></i>
-                <input type="range" id="volumeCtrl" min="0" max="1" step="0.01" value="0.5" class="w-1/2 md:w-1/3 h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-[#84cc16]">
-                <i class="fas fa-volume-up text-gray-400"></i>
-            </div>
-            <!-- Sleep Timer Button absolutely positioned on the right -->
-            <div class="absolute right-4 md:right-6">
-                 <button id="sleepTimerBtn" class="player-button text-gray-400 hover:text-[#84cc16]"><i class="fas fa-clock fa-lg"></i></button>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- 
-      MODIFICATION: Library Section Wrapper.
-      - 'flex-grow' makes this section take all available vertical space.
-      - 'overflow-y-auto' makes ONLY this section scrollable if its content is too tall.
-    -->
-    <div id="library-section" class="flex flex-col flex-grow overflow-y-auto custom-scrollbar">
-        <!-- Tabs for Song Lists (Sticky within this scrollable container) -->
-        <div class="flex border-b border-gray-700 sticky top-0 bg-gray-900 z-10 flex-shrink-0">
-            <button data-tab="library" class="tab-button flex-1 py-3 text-center text-gray-400 hover:text-white tab-active">Surahs</button>
-            <button data-tab="favorites" class="tab-button flex-1 py-3 text-center text-gray-400 hover:text-white">Favorites</button>
-            <button data-tab="playlists" class="tab-button flex-1 py-3 text-center text-gray-400 hover:text-white">Playlists</button>
-        </div>
+    <div id="app-wrapper" class="bg-gray-900 text-white flex flex-col h-screen">
 
         <!-- 
-          Song List Area
-          MODIFICATION: Removed 'flex-grow' and 'overflow-y-auto' as the parent now handles this.
+          Player Section Wrapper (flex-shrink-0)
+          This section contains all player controls and remains at a fixed size.
         -->
-        <div id="songListContainer" class="p-2">
-            <!-- Library View -->
-            <div id="libraryView" class="tab-content">
-                <!-- Songs will be injected here -->
-            </div>
-            <!-- Favorites View -->
-            <div id="favoritesView" class="tab-content hidden">
-                <p class="text-gray-500 text-center p-4 hidden" id="noFavoritesMessage">No favorite Surahs yet.</p>
-                <div id="favoriteSongsContainer">
-                    <!-- Favorite songs will be injected here -->
+        <div id="player-section" class="flex-shrink-0">
+            <!-- Top Bar: Current Song Info -->
+            <div class="p-4 bg-gray-800 shadow-md relative">
+                <div id="currentSongDisplay" class="text-center flex items-center justify-center">
+                     <div id="header-now-playing" class="now-playing-indicator hidden mr-2">
+                       <span></span><span></span><span></span><span></span>
+                    </div>
+                    <div>
+                        <p id="songTitle" class="text-lg font-semibold truncate">No Song Selected</p>
+                        <p id="songArtist" class="text-sm text-gray-400 truncate">---</p>
+                    </div>
                 </div>
             </div>
-            <!-- Playlists View -->
-            <div id="playlistsView" class="tab-content hidden">
-                <div class="p-2">
-                    <button id="createPlaylistBtn" class="w-full bg-[#84cc16] hover:bg-[#65a30d] text-white font-semibold py-2 px-4 rounded-lg mb-2">
-                        <i class="fas fa-plus-circle mr-2"></i>Create New Playlist
-                    </button>
-                     <div id="myPlaylistsContainer">
-                        <!-- Playlists will be listed here -->
-                     </div>
-                     <p class="text-gray-500 text-center p-4 hidden" id="noPlaylistsMessage">There are no playlists. Create one first!</p>
+
+            <!-- Progress Bar and Time -->
+            <div class="p-4 bg-gray-800">
+                <input type="range" id="progressBar" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-[#84cc16]">
+                <div class="flex justify-between text-xs text-gray-400 mt-1">
+                    <span id="currentTime">0:00</span>
+                    <span id="duration">0:00</span>
                 </div>
             </div>
-            <!-- Single Playlist Songs View -->
-            <div id="singlePlaylistSongsView" class="tab-content hidden">
-                 <div class="flex items-center justify-between p-2 border-b border-gray-700">
-                    <button id="backToPlaylistsBtn" class="text-[#84cc16] hover:text-[#65a30d]">
-                        <i class="fas fa-arrow-left mr-2"></i> Back to Playlists
-                    </button>
-                    <h3 id="currentPlaylistNameHeader" class="text-lg font-semibold">Playlist Surahs</h3>
+
+            <!-- Player Controls -->
+            <div class="p-4 bg-gray-800 flex items-center justify-around">
+                <button id="shuffleBtn" class="player-button text-gray-400 hover:text-[#84cc16]"><i class="fas fa-random fa-lg"></i></button>
+                <button id="prevBtn" class="player-button text-gray-300 hover:text-white"><i class="fas fa-step-backward fa-xl"></i></button>
+                <button id="playPauseBtn" class="player-button text-[#84cc16] hover:text-[#65a30d] bg-gray-700 rounded-full w-16 h-16 flex items-center justify-center">
+                    <i class="fas fa-play fa-2x"></i>
+                </button>
+                <button id="nextBtn" class="player-button text-gray-300 hover:text-white"><i class="fas fa-step-forward fa-xl"></i></button>
+                <button id="loopBtn" class="player-button text-gray-400 hover:text-[#84cc16]"><i class="fas fa-retweet fa-lg"></i></button>
+            </div>
+
+            <!-- Volume and Sleep Timer -->
+            <div class="px-4 md:px-6 pt-2 pb-4 bg-gray-800 flex items-center justify-center relative">
+                <!-- Centered Volume Controls -->
+                <div class="flex items-center justify-center space-x-2 w-full">
+                    <i class="fas fa-volume-down text-gray-400"></i>
+                    <input type="range" id="volumeCtrl" min="0" max="1" step="0.01" value="0.5" class="w-1/2 md:w-1/3 h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-[#84cc16]">
+                    <i class="fas fa-volume-up text-gray-400"></i>
                 </div>
-                <div id="songsInPlaylistContainer">
-                    <!-- Songs in the selected playlist will be injected here -->
+                <!-- Sleep Timer Button absolutely positioned on the right -->
+                <div class="absolute right-4 md:right-6">
+                     <button id="sleepTimerBtn" class="player-button text-gray-400 hover:text-[#84cc16]"><i class="fas fa-clock fa-lg"></i></button>
                 </div>
-                 <p class="text-gray-500 text-center p-4 hidden" id="noSongsInPlaylistMessage">This playlist is empty.</p>
+            </div>
+        </div>
+
+
+        <!-- 
+          Library Section Wrapper (flex-grow, overflow-y-auto)
+          This section takes up the remaining vertical space and scrolls internally.
+        -->
+        <div id="library-section" class="flex flex-col flex-grow overflow-y-auto custom-scrollbar">
+            <!-- Tabs for Song Lists (Sticky within this scrollable container) -->
+            <div class="flex border-b border-gray-700 sticky top-0 bg-gray-900 z-10 flex-shrink-0">
+                <button data-tab="library" class="tab-button flex-1 py-3 text-center text-gray-400 hover:text-white tab-active">Surahs</button>
+                <button data-tab="favorites" class="tab-button flex-1 py-3 text-center text-gray-400 hover:text-white">Favorites</button>
+                <button data-tab="playlists" class="tab-button flex-1 py-3 text-center text-gray-400 hover:text-white">Playlists</button>
+            </div>
+
+            <!-- 
+              Song List Area
+            -->
+            <div id="songListContainer" class="p-2">
+                <!-- Library View -->
+                <div id="libraryView" class="tab-content">
+                    <!-- Songs will be injected here -->
+                </div>
+                <!-- Favorites View -->
+                <div id="favoritesView" class="tab-content hidden">
+                    <p class="text-gray-500 text-center p-4 hidden" id="noFavoritesMessage">No favorite Surahs yet.</p>
+                    <div id="favoriteSongsContainer">
+                        <!-- Favorite songs will be injected here -->
+                    </div>
+                </div>
+                <!-- Playlists View -->
+                <div id="playlistsView" class="tab-content hidden">
+                    <div class="p-2">
+                        <button id="createPlaylistBtn" class="w-full bg-[#84cc16] hover:bg-[#65a30d] text-white font-semibold py-2 px-4 rounded-lg mb-2">
+                            <i class="fas fa-plus-circle mr-2"></i>Create New Playlist
+                        </button>
+                         <div id="myPlaylistsContainer">
+                            <!-- Playlists will be listed here -->
+                         </div>
+                         <p class="text-gray-500 text-center p-4 hidden" id="noPlaylistsMessage">There are no playlists. Create one first!</p>
+                    </div>
+                </div>
+                <!-- Single Playlist Songs View -->
+                <div id="singlePlaylistSongsView" class="tab-content hidden">
+                     <div class="flex items-center justify-between p-2 border-b border-gray-700">
+                        <button id="backToPlaylistsBtn" class="text-[#84cc16] hover:text-[#65a30d]">
+                            <i class="fas fa-arrow-left mr-2"></i> Back to Playlists
+                        </button>
+                        <h3 id="currentPlaylistNameHeader" class="text-lg font-semibold">Playlist Surahs</h3>
+                    </div>
+                    <div id="songsInPlaylistContainer">
+                        <!-- Songs in the selected playlist will be injected here -->
+                    </div>
+                     <p class="text-gray-500 text-center p-4 hidden" id="noSongsInPlaylistMessage">This playlist is empty.</p>
+                </div>
             </div>
         </div>
     </div>
@@ -327,7 +331,8 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, addDoc, getDocs, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- Firebase Configuration ---
+        // --- All JavaScript code remains the same ---
+        // ... (The entire script content from the uploaded file) ...
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
             apiKey: "AIzaSyCKQhaLiswg-bGGKgnO5ScH2-xLzspToHA",
             authDomain: "quranenglishstream.firebaseapp.com",
@@ -338,19 +343,14 @@
             measurementId: "G-JX6YBY2DVM"
         };
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'audio-player-default-app';
-
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
-
         let userId = null;
         let dbUserDocRef = null;
         let dbPlaylistsCollectionRef = null;
         let unsubscribeUserDoc = null;
         let unsubscribePlaylists = null;
-
-        // --- Audio Player State & Elements ---
         const audioPlayer = document.getElementById('audioPlayer');
         const playPauseBtn = document.getElementById('playPauseBtn');
         const prevBtn = document.getElementById('prevBtn');
@@ -364,7 +364,6 @@
         const songTitleDisplay = document.getElementById('songTitle');
         const songArtistDisplay = document.getElementById('songArtist');
         const headerNowPlayingIndicator = document.getElementById('header-now-playing');
-
         const libraryView = document.getElementById('libraryView');
         const favoritesView = document.getElementById('favoritesView');
         const favoriteSongsContainer = document.getElementById('favoriteSongsContainer');
@@ -373,38 +372,30 @@
         const songsInPlaylistContainer = document.getElementById('songsInPlaylistContainer');
         const currentPlaylistNameHeader = document.getElementById('currentPlaylistNameHeader');
         const backToPlaylistsBtn = document.getElementById('backToPlaylistsBtn');
-        
         const noFavoritesMessage = document.getElementById('noFavoritesMessage');
         const noPlaylistsMessage = document.getElementById('noPlaylistsMessage');
         const myPlaylistsContainer = document.getElementById('myPlaylistsContainer');
         const noSongsInPlaylistMessage = document.getElementById('noSongsInPlaylistMessage');
-
-        // Modals
         const createPlaylistModal = document.getElementById('createPlaylistModal');
         const newPlaylistNameInput = document.getElementById('newPlaylistName');
         const savePlaylistBtn = document.getElementById('savePlaylistBtn');
         const cancelCreatePlaylistBtn = document.getElementById('cancelCreatePlaylistBtn');
         const createPlaylistBtn = document.getElementById('createPlaylistBtn');
-
         const addToPlaylistModal = document.getElementById('addToPlaylistModal');
         const playlistSelectionContainer = document.getElementById('playlistSelectionContainer');
         const songIdToAddToPlaylistInput = document.getElementById('songIdToAddToPlaylist');
         const cancelAddToPlaylistBtn = document.getElementById('cancelAddToPlaylistBtn');
         const noPlaylistsForAddingMessage = document.getElementById('noPlaylistsForAddingMessage');
-        
         const deletePlaylistModal = document.getElementById('deletePlaylistModal');
         const deleteModalText = document.getElementById('deleteModalText');
         const confirmDeletePlaylistBtn = document.getElementById('confirmDeletePlaylistBtn');
         const cancelDeletePlaylistBtn = document.getElementById('cancelDeletePlaylistBtn');
-
         const toastNotification = document.getElementById('toastNotification');
-        
         const sleepTimerBtn = document.getElementById('sleepTimerBtn');
         const sleepTimerModal = document.getElementById('sleepTimerModal');
         const sleepTimerTitle = document.getElementById('sleepTimerTitle');
         const timerOptions = document.getElementById('timerOptions');
         const cancelSleepTimerBtn = document.getElementById('cancelSleepTimerBtn');
-
         let songs = [
             { id: 's1', title: 'Surah 1: Al-Fatiha (The Opening)', artist: 'Mishary Al-Afasy and Ibrahim Walk', url: 'https://archive.org/download/AlQuranWithEnglishSaheehIntlTranslation--RecitationByMishariIbnRashidAl-AfasyWithIbrahimWalk/001.mp3'},
             { id: 's2', title: 'Surah 2: Al-Baqarah (The Cow)', artist: 'Mishary Al-Afasy and Ibrahim Walk', url: 'https://archive.org/download/AlQuranWithEnglishSaheehIntlTranslation--RecitationByMishariIbnRashidAl-AfasyWithIbrahimWalk/002.mp3'},
@@ -521,7 +512,6 @@
             { id: 's113', title: 'Surah 113: Al-Falaq (The Daybreak)', artist: 'Mishary Al-Afasy and Ibrahim Walk', url: 'https://archive.org/download/AlQuranWithEnglishSaheehIntlTranslation--RecitationByMishariIbnRashidAl-AfasyWithIbrahimWalk/113.mp3'},
             { id: 's114', title: 'Surah 114: An-Nas (The Mankind)', artist: 'Mishary Al-Afasy and Ibrahim Walk', url: 'https://archive.org/download/AlQuranWithEnglishSaheehIntlTranslation--RecitationByMishariIbnRashidAl-AfasyWithIbrahimWalk/114.mp3'}
         ];
-
         let currentSongIndex = 0;
         let isPlaying = false;
         let isShuffle = false;
@@ -534,11 +524,8 @@
         let lastPlaybackState = null;
         let sleepTimerId = null;
         let activeTimerMinutes = 0;
-        let playlistIdToDelete = null; 
+        let playlistIdToDelete = null;
 
-        // --- All JavaScript functions remain unchanged ---
-        // ... (The entire script content from the uploaded file) ...
-         // --- Toast Notification ---
         function showToast(message, duration) {
             duration = duration || 3000;
             toastNotification.textContent = message;
@@ -547,8 +534,6 @@
                 toastNotification.classList.remove('show');
             }, duration);
         }
-
-        // --- Authentication and Data Loading ---
         onAuthStateChanged(auth, function(user) {
             if (user) {
                 userId = user.uid;
@@ -570,7 +555,6 @@
                 updateActiveTab('library', { isInitialLoad: true });
             }
         });
-
         async function initAuth() {
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
@@ -583,8 +567,6 @@
                 showToast("Error connecting to services. Data might not save.", 5000);
             }
         }
-
-        // --- UI Logic ---
         function updatePlayerHeader() {
             const songToDisplay = playbackTracklist[currentSongIndex];
             const activeTabButton = document.querySelector('.tab-button.tab-active');
@@ -607,7 +589,6 @@
             }
             songArtistDisplay.textContent = "---";
         }
-
         function updateNowPlayingIndicator() {
             document.querySelectorAll('.now-playing-indicator').forEach(function(indicator) {
                 indicator.style.display = 'none';
@@ -628,9 +609,6 @@
                 }
             }
         }
-
-
-        // --- Audio Controls ---
         function loadSong(index, options) {
             options = options || {};
             if (index >= 0 && index < playbackTracklist.length) {
@@ -657,7 +635,6 @@
             updateSelectedSongUI();
             updateNowPlayingIndicator();
         }
-
         function playSong() {
             if (playbackTracklist.length === 0) {
                  showToast("No song to play.", 3000);
@@ -686,7 +663,6 @@
                     });
             }
         }
-
         function pauseSong() {
             audioPlayer.pause();
             isPlaying = false;
@@ -694,7 +670,6 @@
             updateNowPlayingIndicator();
             savePlaybackState(); 
         }
-
         playPauseBtn.addEventListener('click', function() {
             if (isPlaying) {
                 pauseSong();
@@ -702,7 +677,6 @@
                 playSong();
             }
         });
-
         nextBtn.addEventListener('click', function() {
             if (playbackTracklist.length === 0) return;
             let nextIndex = currentSongIndex + 1;
@@ -711,7 +685,6 @@
             }
             loadSong(nextIndex);
         });
-
         prevBtn.addEventListener('click', function() {
             if (playbackTracklist.length === 0) return;
             let prevIndex = currentSongIndex - 1;
@@ -720,7 +693,6 @@
             }
             loadSong(prevIndex);
         });
-
         loopBtn.addEventListener('click', function() {
             isLoop = !isLoop;
             audioPlayer.loop = isLoop; 
@@ -728,7 +700,6 @@
             loopBtn.classList.toggle('text-gray-400', !isLoop);
             showToast(isLoop ? "Loop current track enabled" : "Loop current track disabled");
         });
-
         shuffleBtn.addEventListener('click', function() {
             isShuffle = !isShuffle;
             shuffleBtn.classList.toggle('text-[#84cc16]', isShuffle);
@@ -750,8 +721,6 @@
             updateNowPlayingIndicator();
             showToast(isShuffle ? "Shuffle enabled" : "Shuffle disabled");
         });
-        
-
         audioPlayer.addEventListener('timeupdate', function() {
             if (audioPlayer.duration) {
                 const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
@@ -759,38 +728,30 @@
                 currentTimeDisplay.textContent = formatTime(audioPlayer.currentTime);
             }
         });
-
         audioPlayer.addEventListener('loadedmetadata', function() {
             durationDisplay.textContent = formatTime(audioPlayer.duration);
             progressBar.value = 0; 
         });
-        
         audioPlayer.addEventListener('ended', function() {
             if (!audioPlayer.loop) {
                 nextBtn.click();
             }
         });
-
-
         progressBar.addEventListener('input', function(e) {
             if (audioPlayer.duration) {
                 const seekTime = (e.target.value / 100) * audioPlayer.duration;
                 audioPlayer.currentTime = seekTime;
             }
         });
-
         volumeCtrl.addEventListener('input', function(e) {
             audioPlayer.volume = e.target.value;
         });
-
         function formatTime(seconds) {
             if (isNaN(seconds)) return '0:00';
             const minutes = Math.floor(seconds / 60);
             const secs = Math.floor(seconds % 60);
             return minutes + ':' + (secs < 10 ? '0' : '') + secs;
         }
-
-        // --- Song List Rendering ---
         function renderSongList(container, tracklistToRender, isPlaylistContext, playlistIdForContext) {
             container.innerHTML = ''; 
             if (!tracklistToRender || tracklistToRender.length === 0) {
@@ -863,7 +824,6 @@
                 container.appendChild(songDiv);
             });
         }
-        
         function updateSelectedSongUI() {
             document.querySelectorAll('.song-item').forEach(function(item) {
                 item.classList.remove('selected', 'border-l-4', 'border-[#84cc16]');
@@ -875,18 +835,14 @@
                 }
             });
         }
-
-        // --- Tab Navigation ---
         const tabButtons = document.querySelectorAll('.tab-button');
         const tabContents = document.querySelectorAll('.tab-content');
-
         tabButtons.forEach(function(button) {
             button.addEventListener('click', function() {
                 const tabName = button.dataset.tab;
                 updateActiveTab(tabName);
             });
         });
-        
         function updateActiveTab(tabName, options) {
             options = options || {};
             
@@ -936,10 +892,8 @@
                 updatePlayerHeader();
                 updateNowPlayingIndicator();
                 updateSelectedSongUI();
-            }, 300); // Duration of the fadeOut animation
+            }, 300); 
         }
-
-        // --- Favorites Management ---
         async function loadUserDocumentData() {
             if (!userId || !dbUserDocRef) {
                  favoriteSongIds = []; renderFavorites(); return;
@@ -966,7 +920,6 @@
                 showToast("Could not load user data.", 4000);
             });
         }
-
         async function toggleFavorite(songId, iconElement) {
             if (!userId || !dbUserDocRef) {
                 showToast("Cannot save favorite. Not connected.", 3000); return;
@@ -986,7 +939,6 @@
                 showToast("Error saving favorite.", 3000);
             }
         }
-
         function renderFavorites() {
             const favSongsData = songs.filter(function(song) { return favoriteSongIds.includes(song.id); });
             noFavoritesMessage.classList.toggle('hidden', favSongsData.length > 0);
@@ -999,8 +951,6 @@
             updateNowPlayingIndicator();
             updateSelectedSongUI();
         }
-        
-        // --- Playback State Management ---
         async function savePlaybackState() {
             if (!userId || !dbUserDocRef || currentSongIndex < 0) return;
             
@@ -1018,10 +968,7 @@
                 console.error("Error saving playback state:", error);
             }
         }
-        
         window.addEventListener('beforeunload', savePlaybackState);
-        
-        // --- Kodular Communication Bridge ---
         if (window.AppInventor && window.AppInventor.getWebViewString) {
             function checkForAppCommands() {
                 const command = window.AppInventor.getWebViewString();
@@ -1032,8 +979,6 @@
             }
             setInterval(checkForAppCommands, 250);
         }
-
-        // --- Sleep Timer ---
         function updateSleepTimerUI() {
             timerOptions.querySelectorAll('button').forEach(function(btn) {
                 btn.classList.remove('timer-button-active');
@@ -1047,7 +992,6 @@
                 sleepTimerTitle.textContent = "Sleep Timer";
             }
         }
-
         function setSleepTimer(minutes) {
             if(sleepTimerId) clearTimeout(sleepTimerId);
             activeTimerMinutes = minutes;
@@ -1073,32 +1017,25 @@
             updateSleepTimerUI();
             sleepTimerModal.classList.remove('active');
         }
-
         sleepTimerBtn.addEventListener('click', function() {
             updateSleepTimerUI();
             sleepTimerModal.classList.add('active');
         });
-
         cancelSleepTimerBtn.addEventListener('click', function() {
             sleepTimerModal.classList.remove('active');
         });
-
         timerOptions.addEventListener('click', function(e) {
             if(e.target.tagName === 'BUTTON') {
                 const minutes = parseInt(e.target.dataset.minutes, 10);
                 setSleepTimer(minutes);
             }
         });
-
-
-        // --- Playlist Management ---
         createPlaylistBtn.addEventListener('click', function() {
             newPlaylistNameInput.value = '';
             createPlaylistModal.classList.add('active');
             newPlaylistNameInput.focus();
         });
         cancelCreatePlaylistBtn.addEventListener('click', function() { createPlaylistModal.classList.remove('active'); });
-
         savePlaylistBtn.addEventListener('click', async function() {
             if (!userId || !dbPlaylistsCollectionRef) {
                  showToast("Cannot save playlist. Not connected.", 3000); return;
@@ -1123,7 +1060,6 @@
                 showToast("Error creating playlist.", 3000);
             }
         });
-
         async function loadPlaylists() {
             if (!userId || !dbPlaylistsCollectionRef) {
                  playlists = []; renderPlaylists(); return;
@@ -1152,7 +1088,6 @@
                 console.error("Error loading playlists:", error);
             });
         }
-        
         function renderPlaylists() {
             myPlaylistsContainer.innerHTML = '';
             noPlaylistsMessage.classList.toggle('hidden', playlists.length > 0);
@@ -1193,18 +1128,15 @@
                  updatePlayerHeader();
             }
         }
-        
         function openDeleteConfirmationModal(playlistId, playlistName) {
             playlistIdToDelete = playlistId;
             deleteModalText.textContent = `Are you sure you want to delete the playlist "${playlistName}"? This cannot be undone.`;
             deletePlaylistModal.classList.add('active');
         }
-
         function closeDeleteConfirmationModal() {
             deletePlaylistModal.classList.remove('active');
             playlistIdToDelete = null;
         }
-
         async function deletePlaylist(playlistId) {
              if (!userId || !dbPlaylistsCollectionRef) {
                  showToast("Cannot delete playlist. Not connected.", 3000); return;
@@ -1217,7 +1149,6 @@
                 showToast("Error deleting playlist.", 3000);
             }
         }
-
         function openAddToPlaylistModal(songId) {
             if (!userId || !dbPlaylistsCollectionRef) { showToast("Connect to save changes.", 3000); return; }
             songIdToAddToPlaylistInput.value = songId;
@@ -1248,7 +1179,6 @@
             addToPlaylistModal.classList.add('active');
         }
         cancelAddToPlaylistBtn.addEventListener('click', function() { addToPlaylistModal.classList.remove('active'); });
-
         async function addSongToPlaylist(songId, playlistId) {
             if (!userId || !dbPlaylistsCollectionRef) {
                  showToast("Cannot add to playlist. Not connected.", 3000); return;
@@ -1263,7 +1193,6 @@
                 showToast("Error adding Surah to playlist.", 3000);
             }
         }
-
         async function removeSongFromPlaylist(songId, playlistId) {
              if (!userId || !dbPlaylistsCollectionRef) {
                  showToast("Cannot remove from playlist. Not connected.", 3000); return;
@@ -1278,7 +1207,6 @@
                 showToast("Error removing Surah from playlist.", 3000);
             }
         }
-
         function showSongsForPlaylist(playlistId) {
             const playlist = playlists.find(function(p) { return p.id === playlistId; });
             if (!playlist) {
@@ -1293,7 +1221,6 @@
             currentPlaylistNameHeader.textContent = playlist.name;
             renderSongsInPlaylist(playlistId);
         }
-        
         function renderSongsInPlaylist(playlistId) {
             const playlist = playlists.find(function(p) { return p.id === playlistId; });
             songsInPlaylistContainer.innerHTML = ''; 
@@ -1316,16 +1243,10 @@
             updatePlayerHeader({view: 'singlePlaylist', isEmpty: playlistSongsData.length === 0});
             updateSelectedSongUI();
         }
-
-
         backToPlaylistsBtn.addEventListener('click', showPlaylistsList);
-
         function showPlaylistsList() {
             updateActiveTab('playlists');
         }
-
-
-        // --- Initial Setup ---
         document.addEventListener('DOMContentLoaded', function() {
             initAuth(); 
             
@@ -1338,7 +1259,6 @@
 
             cancelDeletePlaylistBtn.addEventListener('click', closeDeleteConfirmationModal);
         });
-
     </script>
 </body>
 </html>
