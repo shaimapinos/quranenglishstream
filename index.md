@@ -1,6 +1,5 @@
 
 
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -590,7 +589,7 @@
             } else {
                 songTitleDisplay.textContent = "Select a Surah to Play";
             }
-            songArtistDisplay.textContent = "---";
+            songArtistDisplay.textContent = "______________________";
         }
         function updateNowPlayingIndicator() {
             document.querySelectorAll('.now-playing-indicator').forEach(function(indicator) {
