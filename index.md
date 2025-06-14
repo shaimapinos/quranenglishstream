@@ -288,7 +288,7 @@
     <!-- Modal for Adding to Playlist -->
     <div id="addToPlaylistModal" class="modal fixed inset-0 bg-black bg-opacity-75 items-center justify-center z-50 p-4">
         <div class="bg-gray-800 p-6 rounded-lg shadow-xl w-full max-w-md">
-            <h3 class="text-xl font-semibold mb-4">Add to Playlist</h3>
+            <h3 class="text-xl text-white font-semibold mb-4">Add to Playlist</h3>
             <input type="hidden" id="songIdToAddToPlaylist">
             <div id="playlistSelectionContainer" class="max-h-60 overflow-y-auto custom-scrollbar mb-4 border border-gray-700 rounded-md p-2">
                 <!-- Available playlists for selection -->
@@ -1165,7 +1165,7 @@
                     const pDiv = document.createElement('div');
                     pDiv.className = 'p-2 border-b border-gray-700 flex justify-between items-center last:border-b-0';
                     pDiv.innerHTML = `
-                        <span class="truncate">${playlist.name}</span>
+                        <span class="truncate">${playlist.name}text-white</span>
                         <button data-playlist-id="${playlist.id}" ${isSongInPlaylist ? 'disabled class="text-gray-500 cursor-not-allowed p-1 rounded"' : 'class="text-[#84cc16] hover:text-[#65a30d] p-1 rounded"'}">
                             ${isSongInPlaylist ? '<i class="fas fa-check-circle mr-1"></i> Added' : '<i class="fas fa-plus-circle mr-1"></i> Add'}
                         </button>
