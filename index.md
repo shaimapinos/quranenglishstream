@@ -1,5 +1,4 @@
 
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -156,8 +155,8 @@
                        <span></span><span></span><span></span><span></span>
                     </div>
                     <div>
-                        <p id="songTitle" class="text-lg font-semibold truncate">No Surah Selected</p>
-                        <p id="songArtist" class="text-sm text-gray-400 truncate">---</p>
+                        <p id="songTitle" class="text-lg font-semibold truncate">Select a Surah to Play</p>
+                        <p id="songArtist" class="text-sm text-gray-400 truncate">________________________________</p>
                     </div>
                 </div>
             </div>
