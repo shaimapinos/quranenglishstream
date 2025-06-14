@@ -1165,8 +1165,8 @@
                     const pDiv = document.createElement('div');
                     pDiv.className = 'p-2 border-b border-gray-700 flex justify-between items-center last:border-b-0';
                     pDiv.innerHTML = `
-                        <span class="truncate">${playlist.name}text-white</span>
-                        <button data-playlist-id="${playlist.id}" ${isSongInPlaylist ? 'disabled class="text-gray-500 cursor-not-allowed p-1 rounded"' : 'class="text-[#84cc16] hover:text-[#65a30d] p-1 rounded"'}">
+                        <span class="truncate">${playlist.name}</span>
+                        <button data-playlist-id="${playlist.id}" ${isSongInPlaylist ? 'disabled class="text-white-500 cursor-not-allowed p-1 rounded"' : 'class="text-[#84cc16] hover:text-[#65a30d] p-1 rounded"'}">
                             ${isSongInPlaylist ? '<i class="fas fa-check-circle mr-1"></i> Added' : '<i class="fas fa-plus-circle mr-1"></i> Add'}
                         </button>
                     `;
