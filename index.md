@@ -589,7 +589,7 @@
             } else {
                 songTitleDisplay.textContent = "Select a Surah to Play";
             }
-            songArtistDisplay.textContent = "______________________";
+            songArtistDisplay.textContent = "_______________________________";
         }
         function updateNowPlayingIndicator() {
             document.querySelectorAll('.now-playing-indicator').forEach(function(indicator) {
