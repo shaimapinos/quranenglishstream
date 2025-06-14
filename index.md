@@ -259,12 +259,12 @@
     <!-- Sleep Timer Modal -->
     <div id="sleepTimerModal" class="modal fixed inset-0 bg-black bg-opacity-75 items-center justify-center z-50 p-4">
         <div class="bg-gray-800 p-6 rounded-lg shadow-xl w-full max-w-sm">
-            <h3 id="sleepTimerTitle" class="text-xl font-semibold mb-4 text-center">Sleep Timer</h3>
+            <h3 id="sleepTimerTitle" class="text-xl text-white font-semibold mb-4 text-center">Sleep Timer</h3>
             <div id="timerOptions" class="grid grid-cols-2 gap-3">
-                <button data-minutes="15" class="bg-gray-700 hover:bg-[#84cc16] hover:text-gray-900 font-semibold py-3 px-4 rounded-lg">15 Minutes</button>
-                <button data-minutes="30" class="bg-gray-700 hover:bg-[#84cc16] hover:text-gray-900 font-semibold py-3 px-4 rounded-lg">30 Minutes</button>
-                <button data-minutes="60" class="bg-gray-700 hover:bg-[#84cc16] hover:text-gray-900 font-semibold py-3 px-4 rounded-lg">60 Minutes</button>
-                <button data-minutes="120" class="bg-gray-700 hover:bg-[#84cc16] hover:text-gray-900 font-semibold py-3 px-4 rounded-lg">120 Minutes</button>
+                <button data-minutes="15" class="bg-gray-700 hover:bg-[#84cc16] hover:text-gray-900 text-white font-semibold py-3 px-4 rounded-lg">15 Minutes</button>
+                <button data-minutes="30" class="bg-gray-700 hover:bg-[#84cc16] hover:text-gray-900 text-white font-semibold py-3 px-4 rounded-lg">30 Minutes</button>
+                <button data-minutes="60" class="bg-gray-700 hover:bg-[#84cc16] hover:text-gray-900 text-white font-semibold py-3 px-4 rounded-lg">60 Minutes</button>
+                <button data-minutes="120" class="bg-gray-700 hover:bg-[#84cc16] hover:text-gray-900 text-white font-semibold py-3 px-4 rounded-lg">120 Minutes</button>
                 <button data-minutes="0" class="col-span-2 bg-gray-700 hover:bg-pink-500 font-semibold py-3 px-4 rounded-lg">Turn Off</button>
             </div>
             <div class="flex justify-center mt-4">
